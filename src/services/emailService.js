@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 const pug = require('pug');
 const htmlToText = require('html-to-text');
 
-module.exports = class Email {
+class Email {
   constructor(user, url) {
     this.to = user.email;
     this.firstName = user.name.split(' ')[0];
@@ -58,10 +58,16 @@ module.exports = class Email {
   }
 
   async sendWelcome() {
-    await this.send('welcome', 'Welcome to the Natours Family!');
+    await this.send('welcome', `Welcome to the ${process.env.APP_NAME} Family!`);
+  }
+
+  async sendFarewell() {
+    await this.send('farewell', `We will miss you - ${process.env.APP_NAME} Family!`);
   }
 
   async sendPasswordReset() {
     await this.send('passwordReset', 'Your password reset token (valid for only 10 minutes)');
   }
-};
+}
+
+module.exports = Email;
