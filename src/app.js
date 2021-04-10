@@ -16,7 +16,7 @@ const AppError = require('./utils/AppError');
 const globalErrorController = require('./controllers/errorController');
 
 // router
-const router = require('./routers');
+const router = require('./routers/v1');
 
 // Start express app
 const app = express();
@@ -40,7 +40,7 @@ app.options('*', cors());
 // app.options('/api/v1/tours/:id', cors());
 
 // Serving static files
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Development logging
 if (process.env.NODE_ENV === 'development') {
@@ -74,7 +74,7 @@ app.get('/', (req, res, next) => {
 });
 
 // 2) Routes
-router.use(`/api/${process.env.API_VERSION}`, router);
+app.use(`/api/${process.env.API_VERSION}`, router);
 
 // 3) Redirect : NOT FOUND
 app.all('*', (req, res, next) => {
