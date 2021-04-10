@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema({
       validator: function (val) {
         // https://stackoverflow.com/questions/3813195/regular-expression-for-indian-mobile-numbers/3813226
         // eslint-disable-next-line no-useless-escape
-        return /^(?:(?:\+|0{0,2})91(\s*[\ -]\s*)?|[0]?)?[789]\d{9}|(\d[ -]?){10}\d$/.test(val);
+        return /^(?:(?:\+|0{0,2})91(\s*[\ -]\s*)?|[0]?)?[6-9]\d{9}|(\d[ -]?){10}\d$/.test(val);
       },
       message: (props) => `${props.value} is not a valid phone number!.`,
     },
