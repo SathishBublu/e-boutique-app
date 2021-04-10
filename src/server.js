@@ -10,9 +10,10 @@ const logger = require('./config/logger');
 connectDB();
 
 const PORT = process.env.PORT || 3000;
+const HOST = process.env.APP_HOST || '';
 
 server.listen(PORT, () => {
-  logger.info(chalk.bgYellowBright.black(`App running on port ${PORT}...`));
+  logger.info(chalk.bgYellowBright.black(`App running on ${HOST}:${PORT}...`));
 });
 
 const exitHandler = () => {

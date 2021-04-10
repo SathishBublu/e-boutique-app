@@ -3,8 +3,9 @@ const chalk = require('chalk');
 const logger = require('./logger');
 
 const connectDB = async () => {
+  const DB = process.env.MONGO_URL.replace('<password>', process.env.DATABASE_PASSWORD);
   const conn = await mongoose
-    .connect(process.env.MONGO_URL, {
+    .connect(DB, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
