@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 
 dotenv.config({ path: './.env' });
 
-const server = require('./app');
+const app = require('./app');
 const connectDB = require('./config/connectDB');
 const logger = require('./config/logger');
 
@@ -12,7 +12,7 @@ connectDB();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.APP_HOST || '';
 
-server.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   logger.info(chalk.bgYellowBright.black(`App running on ${HOST}:${PORT}...`));
 });
 
