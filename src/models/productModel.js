@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 
+const toJSONPlugin = require('./plugins/toJSONPlugin');
+
 const productSchema = new mongoose.Schema(
   {
     name: {
@@ -47,11 +49,10 @@ const productSchema = new mongoose.Schema(
       default: 0,
     },
   },
-  {
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
-  }
+  { toJSON: { virtuals: true }, toObject: { virtuals: true }, timestamps: true }
 );
+
+productSchema.plugin(toJSONPlugin);
 
 // Virtual populate
 productSchema.virtual('reviews', {

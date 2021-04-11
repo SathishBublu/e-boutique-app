@@ -3,68 +3,75 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Please tell us your name!.'],
-  },
-  email: {
-    type: String,
-    required: [true, 'Please tell your email!.'],
-    unique: true,
-    lowercase: true,
-    validate: [validator.isEmail, 'Please provide a valid email id.'],
-  },
-  role: {
-    type: String,
-    default: 'user',
-    enum: ['user', 'admin'],
-  },
-  password: {
-    type: String,
-    required: [true, 'Please provide a password.'],
-    select: false,
-  },
-  passwordConfirm: {
-    type: String,
-    required: [true, 'Please confirm your password.'],
-    validate: {
-      validator: function (el) {
-        return el === this.password;
+const toJSONPlugin = require('./plugins/toJSONPlugin');
+
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, 'Please tell us your name!.'],
+    },
+    email: {
+      type: String,
+      required: [true, 'Please tell your email!.'],
+      unique: true,
+      lowercase: true,
+      validate: [validator.isEmail, 'Please provide a valid email id.'],
+    },
+    role: {
+      type: String,
+      default: 'user',
+      enum: ['user', 'admin'],
+    },
+    password: {
+      type: String,
+      required: [true, 'Please provide a password.'],
+      select: false,
+    },
+    passwordConfirm: {
+      type: String,
+      required: [true, 'Please confirm your password.'],
+      validate: {
+        validator: function (el) {
+          return el === this.password;
+        },
+        message: 'Passwords are not the same!.',
       },
-      message: 'Passwords are not the same!.',
+    },
+    mobile: {
+      type: Number,
+      validate: {
+        validator: function (val) {
+          // https://stackoverflow.com/questions/3813195/regular-expression-for-indian-mobile-numbers/3813226
+          // eslint-disable-next-line no-useless-escape
+          return /^(?:(?:\+|0{0,2})91(\s*[\ -]\s*)?|[0]?)?[6-9]\d{9}|(\d[ -]?){10}\d$/.test(val);
+        },
+        message: (props) => `${props.value} is not a valid phone number!.`,
+      },
+      required: [true, 'Please provide your phone number.'],
+      select: false,
+    },
+    address: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'ShoppingCart',
+    },
+    photo: {
+      type: String,
+      default: '/public/img/users/default.jpg',
+    },
+    passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date,
+    active: {
+      type: Boolean,
+      default: true,
+      select: false,
     },
   },
-  mobile: {
-    type: Number,
-    validate: {
-      validator: function (val) {
-        // https://stackoverflow.com/questions/3813195/regular-expression-for-indian-mobile-numbers/3813226
-        // eslint-disable-next-line no-useless-escape
-        return /^(?:(?:\+|0{0,2})91(\s*[\ -]\s*)?|[0]?)?[6-9]\d{9}|(\d[ -]?){10}\d$/.test(val);
-      },
-      message: (props) => `${props.value} is not a valid phone number!.`,
-    },
-    required: [true, 'Please provide your phone number.'],
-    select: false,
-  },
-  address: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'ShoppingCart',
-  },
-  photo: {
-    type: String,
-    default: '/public/img/users/default.jpg',
-  },
-  passwordChangedAt: Date,
-  passwordResetToken: String,
-  passwordResetExpires: Date,
-  active: {
-    type: Boolean,
-    default: true,
-    select: false,
-  },
-});
+  { toJSON: { virtuals: true }, toObject: { virtuals: true }, timestamps: true }
+);
+
+userSchema.plugin(toJSONPlugin);
 
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
