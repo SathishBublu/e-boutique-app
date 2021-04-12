@@ -14,12 +14,10 @@ router
   .get(productController.getAllProducts)
   .post(authController.protect, authController.restrictTo('admin'), productController.createProduct);
 
-router.use(authController.protect);
-
 router
   .route('/:id')
-  .get(authController.restrictTo('user', 'admin'), productController.getProduct)
-  .patch(authController.restrictTo('admin'), productController.updateProduct)
-  .delete(authController.restrictTo('admin'), productController.deleteProduct);
+  .get(productController.getProduct)
+  .patch(authController.protect, authController.restrictTo('admin'), productController.updateProduct)
+  .delete(authController.protect, authController.restrictTo('admin'), productController.deleteProduct);
 
 module.exports = router;
