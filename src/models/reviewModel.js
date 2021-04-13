@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Product = require('./productModel');
 
+const toJSONPlugin = require('./plugins/toJSONPlugin');
+
 const reviewSchema = new mongoose.Schema(
   {
     reviewTitle: {
@@ -37,6 +39,8 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+reviewSchema.plugin(toJSONPlugin);
+
 reviewSchema.index({ product: 1, user: 1 }, { unique: true });
 
 reviewSchema.pre(/^find/, function (next) {
@@ -45,6 +49,10 @@ reviewSchema.pre(/^find/, function (next) {
     select: 'name photo',
   });
   next();
+});
+
+reviewSchema.virtual('postedOn').get(function () {
+  return this.createdAt;
 });
 
 reviewSchema.statics.calcAverageRating = async function (productId) {
