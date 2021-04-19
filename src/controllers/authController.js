@@ -17,7 +17,7 @@ exports.register = catchAsync(async (req, res, next) => {
     return next(new AppError('Email already taken', httpStatus.BAD_REQUEST));
   }
 
-  const filteredBody = pick(req.body, User.schema.requiredPaths());
+  const filteredBody = pick(req.body, ['name', 'email', 'password', 'passwordConfirm', 'mobile']);
 
   const newUser = await User.create(filteredBody);
 
