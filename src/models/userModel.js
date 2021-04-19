@@ -53,7 +53,7 @@ const userSchema = new mongoose.Schema(
     },
     address: {
       type: mongoose.Schema.ObjectId,
-      ref: 'ShoppingCart',
+      ref: 'ShippingAddress',
     },
     photo: {
       type: String,
@@ -93,6 +93,10 @@ userSchema.pre('save', async function (next) {
 
 userSchema.pre(/^find/, function (next) {
   this.find({ active: { $ne: false } });
+  this.populate({
+    path: 'address',
+    select: '-userId',
+  });
   next();
 });
 

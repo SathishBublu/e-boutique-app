@@ -4,6 +4,7 @@ const authRoutes = require('./authRoutes');
 const userRoutes = require('./userRoutes');
 const productRoutes = require('./productRoutes');
 const reviewRoutes = require('./reviewRoutes');
+const shippingAddressRoutes = require('./shippingAddressRoutes');
 
 const router = express.Router();
 
@@ -12,6 +13,7 @@ const defaultRoutes = [
   { path: '/users', route: userRoutes },
   { path: '/products', route: productRoutes },
   { path: '/reviews', route: reviewRoutes },
+  { path: '/shipping-address', route: shippingAddressRoutes },
 ];
 
 defaultRoutes.forEach((route) => {
