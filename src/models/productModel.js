@@ -61,10 +61,10 @@ productSchema.virtual('reviews', {
   localField: '_id',
 });
 
-productSchema.pre('save', function (next) {
-  this.slug = slugify(this.name, { lower: true, strict: true });
-  next();
-});
+productSchema.statics.isProductNameTaken = async function (slug) {
+  const productSlug = await this.findOne({ slug });
+  return !!productSlug;
+};
 
 const Product = mongoose.model('Product', productSchema);
 

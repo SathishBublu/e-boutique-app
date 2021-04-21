@@ -33,6 +33,11 @@ exports.getProduct = catchAsync(async (req, res, next) => {
 });
 
 exports.createProduct = catchAsync(async (req, res, next) => {
+  req.body.slug = slugify(req.body.name, { lower: true, strict: true });
+
+  if (await Product.isProductNameTaken(req.body.slug))
+    return next(new AppError('Product name is already taken.', httpStatus.BAD_REQUEST));
+
   const product = await Product.create(req.body);
 
   res.status(httpStatus.CREATED).json({
