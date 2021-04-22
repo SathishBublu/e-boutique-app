@@ -6,10 +6,12 @@ const authController = require('../../controllers/authController');
 
 const shippingAddressRoutes = require('./shippingAddressRoutes');
 const wishListRoutes = require('./wishListRoutes');
+const cartRoutes = require('./cartRoutes');
 
 // Nested routes
 router.use('/:userId/shipping-address', shippingAddressRoutes);
 router.use('/:userId/wishlist', wishListRoutes);
+router.use('/:userId/cart', cartRoutes);
 
 // User routes
 router.use(authController.protect);
