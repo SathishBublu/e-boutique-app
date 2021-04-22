@@ -22,14 +22,6 @@ const wishListModel = new mongoose.Schema(
 
 wishListModel.plugin(toJSONPlugin);
 
-wishListModel.pre(/^find/, function (next) {
-  this.populate({
-    path: 'productIds',
-    select: 'name slug category price id',
-  });
-  next();
-});
-
 const WishList = mongoose.model('WishList', wishListModel);
 
 module.exports = WishList;

@@ -15,8 +15,12 @@ exports.getWishList = catchAsync(async (req, res, next) => {
   const isOwner = helpers.checkOwnerShip(userId, req.user);
 
   if (isOwner) {
+    const productPopulateConfig = {
+      path: 'productIds',
+      select: 'name slug category price id',
+    };
     // Find wishlist with userId
-    const wishLists = await WishList.findOne({ userId });
+    const wishLists = await WishList.findOne({ userId }).populate(productPopulateConfig);
 
     // if no wishlist found res with not found
     if (!wishLists) return next(new AppError('There is no wish lists found', httpStatus.NOT_FOUND));
