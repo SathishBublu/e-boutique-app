@@ -11,7 +11,8 @@ router.use(authController.restrictTo('user'));
 router
   .route('/')
   .get(cartController.getCart)
-  .post(cartController.createAndUpdateCart)
+  .post(cartController.createCart)
+  .patch(cartController.updateCart)
   .delete(cartController.deleteCart);
 
 module.exports = router;
