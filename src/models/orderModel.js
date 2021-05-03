@@ -64,7 +64,7 @@ const orderSchema = new mongoose.Schema({
         if (val <= 0) return false;
         return true;
       },
-      message: 'Sub total must be below than 0 currency.',
+      message: 'Sub total must not to be below than 0 currency.',
     },
   },
   paymentMethod: {
