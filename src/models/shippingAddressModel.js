@@ -2,11 +2,14 @@ const mongoose = require('mongoose');
 
 const toJSONPlugin = require('./plugins/toJSONPlugin');
 
-const shippingAddressModel = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'User',
-    required: [true, 'Shipping Address should belong to a user.'],
+const shippingAddressModelLayer = new mongoose.Schema({
+  addressLineOne: {
+    type: String,
+    required: [true, 'Shipping Address should have a required address line.'],
+    trim: true,
+  },
+  addressLineTwo: {
+    type: String,
     trim: true,
   },
   district: {
@@ -27,6 +30,25 @@ const shippingAddressModel = new mongoose.Schema({
   pincode: {
     type: Number,
     required: [true, 'Shipping Address should have a pincode.'],
+  },
+  defaultShippingAddress: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+shippingAddressModelLayer.plugin(toJSONPlugin);
+
+const shippingAddressModel = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
+    required: [true, 'Shipping Address should belong to a user.'],
+    trim: true,
+  },
+  shippingAddress: {
+    type: [shippingAddressModelLayer],
+    required: [true, 'User shipping address should not be empty.'],
   },
 });
 

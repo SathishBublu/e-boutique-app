@@ -1,7 +1,6 @@
 const httpStatus = require('http-status');
 
 const ShippingAddress = require('../models/shippingAddressModel');
-const User = require('../models/userModel');
 
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
@@ -37,17 +36,28 @@ exports.getShippingAddress = catchAsync(async (req, res, next) => {
 exports.createShippingAddress = catchAsync(async (req, res, next) => {
   const filteredData = pick(req.body, ShippingAddress.schema.requiredPaths());
 
-  const shippingAddressExists = await ShippingAddress.findOne({ userId: filteredData.userId });
+  let userShippingAddress = await ShippingAddress.findOne({ userId: filteredData.userId });
 
-  if (shippingAddressExists) return next(new AppError('Shipping Address already Exists', httpStatus.BAD_REQUEST));
+  if (!userShippingAddress) {
+    userShippingAddress = await ShippingAddress.create(filteredData);
+  } else {
+    const { shippingAddress: reqShippingAddress } = req.body;
 
-  const newShippingAddress = await ShippingAddress.create(filteredData);
-  await User.findByIdAndUpdate(filteredData.userId, { address: newShippingAddress.id });
+    if (reqShippingAddress.defaultShippingAddress) {
+      userShippingAddress.shippingAddress.forEach((address) => {
+        address.defaultShippingAddress = false;
+      });
+    }
+
+    userShippingAddress.shippingAddress.unshift(reqShippingAddress);
+
+    await userShippingAddress.save();
+  }
 
   res.status(httpStatus.CREATED).json({
     status: 'success',
     data: {
-      shippingAddress: newShippingAddress,
+      shippingAddress: userShippingAddress,
     },
   });
 });
@@ -55,34 +65,58 @@ exports.createShippingAddress = catchAsync(async (req, res, next) => {
 exports.updateShippingAddress = catchAsync(async (req, res, next) => {
   const { userId } = req.params;
 
-  const shippingAddressExists = await ShippingAddress.findOne({ userId });
+  const userShippingAddress = await ShippingAddress.findOne({ userId });
 
-  if (!shippingAddressExists) return next(new AppError('There is no shipping address found.', httpStatus.NOT_FOUND));
+  if (!userShippingAddress) return next(new AppError('There is no shipping address found.', httpStatus.NOT_FOUND));
 
-  const filteredData = pick(req.body, ShippingAddress.schema.requiredPaths());
-
-  const updatedShippingAddress = await ShippingAddress.findOneAndUpdate({ userId }, filteredData, {
-    new: true,
-    runValidators: true,
+  userShippingAddress.shippingAddress.forEach((address) => {
+    if (`${address._id}` === req.body.id) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const [key, value] of Object.entries(req.body)) {
+        address[key] = value;
+      }
+    }
   });
+
+  await userShippingAddress.save();
 
   res.status(httpStatus.ACCEPTED).send({
     status: 'success',
-    data: {
-      shippingAddress: updatedShippingAddress,
-    },
+    message: 'Shipping address updated successfully.',
   });
 });
 
 exports.deleteShippingAddress = catchAsync(async (req, res, next) => {
   const { userId } = req.params;
 
-  const deletedShippingAddress = await ShippingAddress.findOneAndDelete({ userId });
+  // Find shippingAddress with userId
+  let userShippingAddress = await ShippingAddress.findOne({ userId });
 
-  if (!deletedShippingAddress) return next(new AppError('There is no shipping Address found', httpStatus.NOT_FOUND));
+  //   1. If there is no userShippingAddress send him not found request.
+  if (!userShippingAddress) return next(new AppError('There is no shipping address found.', httpStatus.NOT_FOUND));
 
+  // Check the length of the userShippingAddress.
+  //  1. Delete the specific productId from productIds
+
+  const deletingAddressIndex = userShippingAddress.shippingAddress.findIndex(
+    (address) => `${address._id}` === req.body.id
+  );
+
+  if (deletingAddressIndex === -1)
+    return next(new AppError('Shipping address not found from the list.', httpStatus.BAD_REQUEST));
+
+  userShippingAddress.shippingAddress.splice(deletingAddressIndex, 1);
+
+  //  2. Check if the cart products length is >= 0 delete the entire cart or save the changes
+  if (userShippingAddress.shippingAddress.length <= 0) {
+    userShippingAddress = await ShippingAddress.findOneAndDelete({ userId });
+  } else {
+    await userShippingAddress.save();
+  }
+
+  //  3. Send response
   res.status(httpStatus.ACCEPTED).json({
     status: 'success',
-    message: 'Shipping address deleted successfully',
+    message: 'Shipping address removed successfully.',
   });
 });
