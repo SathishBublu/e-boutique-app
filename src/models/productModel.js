@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const slugify = require('slugify');
+// const slugify = require('slugify');
 
 const toJSONPlugin = require('./plugins/toJSONPlugin');
 
@@ -27,6 +27,10 @@ const productSchema = new mongoose.Schema(
     price: {
       type: Number,
       required: [true, 'A product must have a price.'],
+    },
+    discount: {
+      type: Number,
+      default: 0,
     },
     sizes: {
       type: [String],
@@ -59,6 +63,12 @@ productSchema.virtual('reviews', {
   ref: 'Review',
   foreignField: 'product',
   localField: '_id',
+});
+
+// Document virtual
+productSchema.virtual('totalPrice').get(function () {
+  const subtractionPrice = this.price * (this.discount / 100);
+  return this.price - subtractionPrice;
 });
 
 productSchema.statics.isProductNameTaken = async function (slug) {
