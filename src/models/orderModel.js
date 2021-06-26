@@ -34,7 +34,7 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Order must have a status.'],
     default: 'orderPlaced',
-    enum: ['orderPlaced', 'shipping', 'outForDelivery', 'delivered'],
+    enum: ['orderPlaced', 'orderConfirmed', 'shipping', 'outForDelivery', 'delivered'],
   },
   shippingDate: {
     type: Date,
