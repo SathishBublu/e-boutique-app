@@ -6,6 +6,8 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const compression = require('compression');
 const cors = require('cors');
+
+const csp = require('./middlewares/csp');
 // const pug = require('pug');
 
 const requestLogger = require('./middlewares/requestLogger');
@@ -16,7 +18,8 @@ const AppError = require('./utils/AppError');
 const globalErrorController = require('./controllers/errorController');
 
 // router
-const router = require('./routers/v1');
+const apiRouter = require('./routers/v1');
+const viewRouter = require('./routers/v1/viewRoutes');
 
 // Start express app
 const app = express();
@@ -39,8 +42,10 @@ app.use(cors());
 app.options('*', cors());
 // app.options('/api/v1/tours/:id', cors());
 
+app.use(csp);
+
 // Serving static files
-app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Development logging
 if (process.env.NODE_ENV === 'development') {
@@ -69,12 +74,13 @@ app.use(
 
 app.use(compression());
 
-app.get('/', (req, res, next) => {
-  res.send('Hello World!!!');
-});
+// app.get('/', (req, res, next) => {
+//   res.send('Hello World!!!');
+// });
 
 // 2) Routes
-app.use(`/api/${process.env.API_VERSION}`, router);
+app.use('/', viewRouter);
+app.use(`/api/${process.env.API_VERSION}`, apiRouter);
 
 // 3) Redirect : NOT FOUND
 app.all('*', (req, res, next) => {

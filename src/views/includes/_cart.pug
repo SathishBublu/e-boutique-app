@@ -1,0 +1,62 @@
+// Checkout Modal
+    #modalShoppingCart.modal.shopping-modal.fixed-right.fade(tabindex='-1' aria-labelledby='modalShoppingCartLabel' aria-hidden='true')
+        .modal-dialog.modal-dialog-vertical
+            .modal-content
+                .modal-header.border-bottom
+                    h5#modalShoppingCartLabel.modal-title.mx-auto Your Cart (2)
+                    button.modal-btn-close.btn.btn-light(type='button' data-bs-dismiss='modal' aria-label='Close')
+                        i.fe.fe-x.fs-5.text-secondary
+                .modal-body
+                    ul.list-group.list-group-lg.list-group-flush
+                        li.list-group-item
+                            .row.align-items-center
+                                .col-4
+                                    // Image
+                                    a(href='./product.html')
+                                        img.img-fluid(src='./static/images/products/product-2.jpg' alt='...')
+                                .col-8
+                                    // Title
+                                    p.fw-bold.mb-3
+                                        a.fs-6.text-dark(href='./product.html') Cotton floral print Dress
+                                        br
+                                        span.text-muted &#x20B9;40.00
+                                    // Footer
+                                    .d-flex.align-items-center
+                                        // Select
+                                        select.form-select.form-select-sm.w-auto
+                                            option(value='1') 1
+                                            option(value='1') 2
+                                            option(value='1') 3
+                                        // Remove
+                                        a.ms-auto.link-secondary(href='#!')
+                                            i.fe.fe-x
+                                            | Remove
+                        li.list-group-item
+                            .row.align-items-center
+                                .col-4
+                                    // Image
+                                    a(href='./product.html')
+                                        img.img-fluid(src='./static/images/products/product-4.jpg' alt='...')
+                                .col-8
+                                    // Title
+                                    p.fw-bold.mb-3
+                                        a.fs-6.text-dark(href='./product.html') Suede cross body Bag
+                                        br
+                                        span.text-muted &#x20B9;49.00
+                                    // Footer
+                                    .d-flex.align-items-center
+                                        // Select
+                                        select.form-select.form-select-sm.w-auto
+                                            option(value='1') 1
+                                            option(value='1') 2
+                                            option(value='1') 3
+                                        // Remove
+                                        a.ms-auto.link-secondary(href='#!')
+                                            i.fe.fe-x
+                                            | Remove
+                .modal-footer.bg-light-grey.mt-5.py-4
+                    strong Subtotal
+                    strong.ms-auto &#x20B9;89.00
+                .modal-body.py-3.px-4
+                    a.btn.btn-dark.d-block.w-100.mb-3(href='./checkout.html') Continue to Checkout
+                    a.btn.btn-outline-dark.d-block.w-100(href='./shopping-cart.html') View Cart
